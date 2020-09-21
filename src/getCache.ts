@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { BlockDTO } from './types/dtos/Block.dto'
 import fs from 'fs/promises'
+import isValid from 'is-valid-path'
+import { BlockDTO } from './types/dtos/Block.dto'
 import { BlockIndex } from './types/dtos/BlockIndex.dto'
 import { WalletList } from './types/dtos/WalletList.dto'
 import { TxDTO } from './types/dtos/Tx.dto'
@@ -10,9 +11,12 @@ let PATH_PREFIX = 'arweave-cache/'
 const PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m'
 
 export const setPathPrefix = (path: string) => {
-	// extremely basic check that we have a folder string
 	if(path.charAt(path.length-1) !== '/' ){
 		path += '/'
+	}
+	// check we have valid path string
+	if(!isValid(path)){
+		throw new Error("Invalid path prefix: " + path )
 	}
 	PATH_PREFIX = path
 }
@@ -97,11 +101,11 @@ export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndex> 
 		throw new Error("arweave.net does not serve /hash_list 3-tuples")
 	}
 
-	let path = PATH_PREFIX + 'block-indexes/'
-	let cachedFiles = await getMatchingFiles<BlockIndex>(minimumHeight.toString(), path) //FIX THIS! We only need 1 list cached
+	let path = PATH_PREFIX
+	let cachedFiles = await getMatchingFiles<BlockIndex>('block-index', path) //there's just 1 cache file
 
-	// return cached if it's available
-	if(cachedFiles.length > 0){
+	// return cached if it exists & meets the minuimum height
+	if(cachedFiles.length > 0 && cachedFiles[0].length > minimumHeight){
 		return cachedFiles[0]
 	}
 
@@ -114,8 +118,8 @@ export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndex> 
 		throw new Error('Error! Incorrect BlockIndex format, blockIndex[0] = ' + blockIndex[0] )
 	}
 
-	console.log('fetching new block index for height ', minimumHeight)
-	await fs.writeFile(`${path}${blockIndex.length.toString()}.${blockIndex[0].hash}.json`, JSON.stringify(blockIndex))
+	console.log(PREDEBUG, 'fetching new block index for minimum height ', minimumHeight)
+	await fs.writeFile(`${path}block-index.json`, JSON.stringify(blockIndex))
 	return blockIndex
 }
 

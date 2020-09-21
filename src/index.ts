@@ -9,9 +9,9 @@ const main = async () => {
 	let bj2 = await Cache.getBlockDtoId(bj1.indep_hash)
 	console.log('getBlockDtoId', bj2.height)
 
-	//this needs to be fixed! only need 1 block index
+	//only need 1 block index
 	let bi = await Cache.getBlockIndex(current)
-	console.log('getBlockIndex ' + bi[0].hash)
+	console.log('getBlockIndex ' + bi.length + ', ' + bi[0].hash)
 
 	let wallets1 = await Cache.getWalletList(current)
 	console.log('getWalletList', wallets1.length)
