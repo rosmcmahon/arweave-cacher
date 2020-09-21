@@ -1,0 +1,12 @@
+import { BlockDTO } from './types/dtos/Block.dto';
+import { BlockIndex } from './types/dtos/BlockIndex.dto';
+import { WalletList } from './types/dtos/WalletList.dto';
+import { TxDTO } from './types/dtos/Tx.dto';
+export declare const setPathPrefix: (path: string) => void;
+export declare const setHostServer: (hostString: string) => string;
+export declare const getCurrentHeight: () => Promise<number>;
+export declare const getBlockDtosByHeight: (height: number) => Promise<BlockDTO[]>;
+export declare const getBlockDtoId: (blockId: string) => Promise<BlockDTO>;
+export declare const getBlockIndex: (minimumHeight: number) => Promise<BlockIndex>;
+export declare const getWalletList: (height: number) => Promise<WalletList>;
+export declare const getTxDto: (txid: string) => Promise<TxDTO>;

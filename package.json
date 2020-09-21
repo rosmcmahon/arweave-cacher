@@ -2,10 +2,11 @@
   "name": "arweave-cacher",
   "version": "1.0.0",
   "description": "Library to fetch and cache raw data from an arweave node.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node test/example.ts",
+    "build": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
   "repository": {
