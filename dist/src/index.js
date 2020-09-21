@@ -22,7 +22,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ArCache = void 0;
 __exportStar(require("./types"), exports);
-exports.ArCache = __importStar(require("./getCache"));
+var ArCache = __importStar(require("./getCache"));
+exports.default = ArCache;
 //# sourceMappingURL=index.js.map

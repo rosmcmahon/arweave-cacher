@@ -1,2 +1,4 @@
 export * from './types'
-export * as ArCache from './getCache'
+
+import * as ArCache from './getCache'
+export default ArCache
