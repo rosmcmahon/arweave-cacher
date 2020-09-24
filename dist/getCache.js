@@ -43,7 +43,7 @@ exports.getTxDto = exports.getWalletList = exports.getBlockIndex = exports.getBl
 var axios_1 = __importDefault(require("axios"));
 var promises_1 = __importDefault(require("fs/promises"));
 var is_valid_path_1 = __importDefault(require("is-valid-path"));
-var PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m';
+var PREDEBUG = '\x1b[34m' + 'arweave-cacher:' + '\x1b[0m';
 var HOST_SERVER = 'http://eu-west-1.arweave.net:1984';
 var PATH_PREFIX = 'arweave-cache/';
 var DEBUG_MESSAGES = true;
@@ -53,7 +53,7 @@ exports.setPathPrefix = function (path) {
         path += '/';
     }
     if (!is_valid_path_1.default(path)) {
-        throw new Error("Invalid path prefix: " + path);
+        throw new Error(PREDEBUG + "Invalid path prefix: " + path);
     }
     PATH_PREFIX = path;
 };
@@ -99,7 +99,7 @@ var getMatchingFiles = function (partialName, path) { return __awaiter(void 0, v
                 return [3, 5];
             case 5:
                 if (fileList.length > 0) {
-                    consoleDebug('returning cached file(s): ' + fileList.join(', '));
+                    consoleDebug('returning cached file(s): ' + path + fileList.join(', '));
                     return [2, Promise.all(fileList.map(function (filename) { return __awaiter(void 0, void 0, void 0, function () {
                             var _a, _b;
                             return __generator(this, function (_c) {

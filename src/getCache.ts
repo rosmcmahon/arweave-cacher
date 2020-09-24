@@ -6,7 +6,7 @@ import { BlockIndexDTO } from './types/dtos/BlockIndex.dto'
 import { WalletListDTO } from './types/dtos/WalletList.dto'
 import { TxDTO } from './types/dtos/Tx.dto'
 
-const PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m'
+const PREDEBUG = '\x1b[34m'+'arweave-cacher:'+'\x1b[0m'
 
 /**
  * Configurabe parameters:
@@ -23,7 +23,7 @@ export const setPathPrefix = (path: string) => {
 	}
 	// check we have valid path string
 	if(!isValid(path)){
-		throw new Error("Invalid path prefix: " + path )
+		throw new Error(PREDEBUG + "Invalid path prefix: " + path )
 	}
 	PATH_PREFIX = path
 }
@@ -60,7 +60,7 @@ const getMatchingFiles = async <T>(partialName: string, path: string): Promise<T
 	}
 
 	if(fileList.length > 0){
-		consoleDebug('returning cached file(s): ' + fileList.join(', ')) 
+		consoleDebug('returning cached file(s): ' + path + fileList.join(', ')) 
 
 		return Promise.all(
 			fileList.map(
