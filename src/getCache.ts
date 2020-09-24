@@ -6,9 +6,16 @@ import { BlockIndexDTO } from './types/dtos/BlockIndex.dto'
 import { WalletListDTO } from './types/dtos/WalletList.dto'
 import { TxDTO } from './types/dtos/Tx.dto'
 
+const PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m'
+
+/**
+ * Configurabe parameters:
+ */
 let HOST_SERVER = 'http://eu-west-1.arweave.net:1984' // default node
 let PATH_PREFIX = 'arweave-cache/'
-const PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m'
+let DEBUG_MESSAGES = true // this should default to false
+
+export const setHostServer = (hostString: string) => HOST_SERVER = hostString
 
 export const setPathPrefix = (path: string) => {
 	if(path.charAt(path.length-1) !== '/' ){
@@ -21,7 +28,13 @@ export const setPathPrefix = (path: string) => {
 	PATH_PREFIX = path
 }
 
-export const setHostServer = (hostString: string) => HOST_SERVER = hostString
+export const setDebugMessagesOn = (b: boolean) => DEBUG_MESSAGES = b
+
+const consoleDebug = (message: string) => {
+	if(DEBUG_MESSAGES){
+		console.log(PREDEBUG, message)
+	}
+}
 
 export const getCurrentHeight = async () => Number((await axios.get(HOST_SERVER +'/info')).data.height)
 
@@ -47,7 +60,7 @@ const getMatchingFiles = async <T>(partialName: string, path: string): Promise<T
 	}
 
 	if(fileList.length > 0){
-		console.debug(PREDEBUG, 'returning cached file(s): ' + fileList.join(', ')) 
+		consoleDebug('returning cached file(s): ' + fileList.join(', ')) 
 
 		return Promise.all(
 			fileList.map(
@@ -71,7 +84,7 @@ export const getBlockDtoByHeight = async (height: number): Promise<BlockDTO> => 
 		return cachedFiles[0] //future feature, might be more than 1 block for this height
 	}
 
-	console.log(PREDEBUG, 'fetching new block by height ', heightString)
+	consoleDebug('fetching new block by height ' + heightString)
 	let blockDto: BlockDTO = (await axios.get( HOST_SERVER + '/block/height/' + heightString )).data
 	await fs.writeFile(`${path}${blockDto.height}.${blockDto.indep_hash}.json`, JSON.stringify(blockDto))
 	return blockDto
@@ -86,7 +99,7 @@ export const getBlockDtoById = async (blockId: string): Promise<BlockDTO> => {
 		return cachedFiles[0]
 	}
 
-	console.log(PREDEBUG, 'fetching new block by id ', blockId)
+	consoleDebug('fetching new block by id ' + blockId)
 	let blockDto: BlockDTO = (await axios.get( HOST_SERVER + '/block/hash/' + blockId )).data
 	await fs.writeFile(`${path}${blockDto.height}.${blockDto.indep_hash}.json`, JSON.stringify(blockDto))
 	return blockDto
@@ -118,7 +131,7 @@ export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndexDT
 		throw new Error('Error! Incorrect BlockIndex format, blockIndex[0] = ' + blockIndex[0] )
 	}
 
-	console.log(PREDEBUG, 'fetching new block index for minimum height ', minimumHeight)
+	consoleDebug('fetching new block index for minimum height ' + minimumHeight)
 	await fs.writeFile(`${path}block-index.json`, JSON.stringify(blockIndex))
 	return blockIndex
 }
@@ -133,7 +146,7 @@ export const getWalletList = async (height: number): Promise<WalletListDTO> => {
 		return fileList[0]
 	}
 
-	console.log(PREDEBUG, 'fetching new wallet list for height ', height)
+	consoleDebug('fetching new wallet list for height ' + height)
 	//the nodes can clear old wallet lists to free up space, so this is not guaranteed to work
 	let response = (await axios.get( HOST_SERVER + '/block/height/' + heightString + '/wallet_list' ))
 	if(response.status !== 200){
@@ -153,7 +166,7 @@ export const getTxDto = async (txid: string): Promise<TxDTO> => {
 		return fileList[0]
 	}
 
-	console.log(PREDEBUG, 'fetching new txDto', txid)
+	consoleDebug('fetching new txDto' + txid)
 	let txDto: TxDTO = (await axios.get(`${HOST_SERVER}/tx/${txid}`)).data
 	await fs.writeFile(`${path}${txDto.id}.json`, JSON.stringify(txDto))
 	return txDto

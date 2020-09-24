@@ -39,13 +39,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTxDto = exports.getWalletList = exports.getBlockIndex = exports.getBlockDtoById = exports.getBlockDtoByHeight = exports.getCurrentHeight = exports.setHostServer = exports.setPathPrefix = void 0;
+exports.getTxDto = exports.getWalletList = exports.getBlockIndex = exports.getBlockDtoById = exports.getBlockDtoByHeight = exports.getCurrentHeight = exports.setDebugMessagesOn = exports.setPathPrefix = exports.setHostServer = void 0;
 var axios_1 = __importDefault(require("axios"));
 var promises_1 = __importDefault(require("fs/promises"));
 var is_valid_path_1 = __importDefault(require("is-valid-path"));
+var PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m';
 var HOST_SERVER = 'http://eu-west-1.arweave.net:1984';
 var PATH_PREFIX = 'arweave-cache/';
-var PREDEBUG = '\x1b[34marweave-cacher:\x1b[0m';
+var DEBUG_MESSAGES = true;
+exports.setHostServer = function (hostString) { return HOST_SERVER = hostString; };
 exports.setPathPrefix = function (path) {
     if (path.charAt(path.length - 1) !== '/') {
         path += '/';
@@ -55,7 +57,12 @@ exports.setPathPrefix = function (path) {
     }
     PATH_PREFIX = path;
 };
-exports.setHostServer = function (hostString) { return HOST_SERVER = hostString; };
+exports.setDebugMessagesOn = function (b) { return DEBUG_MESSAGES = b; };
+var consoleDebug = function (message) {
+    if (DEBUG_MESSAGES) {
+        console.log(PREDEBUG, message);
+    }
+};
 exports.getCurrentHeight = function () { return __awaiter(void 0, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
     switch (_b.label) {
         case 0:
@@ -92,7 +99,7 @@ var getMatchingFiles = function (partialName, path) { return __awaiter(void 0, v
                 return [3, 5];
             case 5:
                 if (fileList.length > 0) {
-                    console.debug(PREDEBUG, 'returning cached file(s): ' + fileList.join(', '));
+                    consoleDebug('returning cached file(s): ' + fileList.join(', '));
                     return [2, Promise.all(fileList.map(function (filename) { return __awaiter(void 0, void 0, void 0, function () {
                             var _a, _b;
                             return __generator(this, function (_c) {
@@ -122,7 +129,7 @@ exports.getBlockDtoByHeight = function (height) { return __awaiter(void 0, void 
                 if (cachedFiles.length > 0) {
                     return [2, cachedFiles[0]];
                 }
-                console.log(PREDEBUG, 'fetching new block by height ', heightString);
+                consoleDebug('fetching new block by height ' + heightString);
                 return [4, axios_1.default.get(HOST_SERVER + '/block/height/' + heightString)];
             case 2:
                 blockDto = (_a.sent()).data;
@@ -145,7 +152,7 @@ exports.getBlockDtoById = function (blockId) { return __awaiter(void 0, void 0, 
                 if (cachedFiles.length > 0) {
                     return [2, cachedFiles[0]];
                 }
-                console.log(PREDEBUG, 'fetching new block by id ', blockId);
+                consoleDebug('fetching new block by id ' + blockId);
                 return [4, axios_1.default.get(HOST_SERVER + '/block/hash/' + blockId)];
             case 2:
                 blockDto = (_a.sent()).data;
@@ -177,7 +184,7 @@ exports.getBlockIndex = function (minimumHeight) { return __awaiter(void 0, void
                 if (!blockIndex[0].hash) {
                     throw new Error('Error! Incorrect BlockIndex format, blockIndex[0] = ' + blockIndex[0]);
                 }
-                console.log(PREDEBUG, 'fetching new block index for minimum height ', minimumHeight);
+                consoleDebug('fetching new block index for minimum height ' + minimumHeight);
                 return [4, promises_1.default.writeFile(path + "block-index.json", JSON.stringify(blockIndex))];
             case 3:
                 _a.sent();
@@ -198,7 +205,7 @@ exports.getWalletList = function (height) { return __awaiter(void 0, void 0, voi
                 if (fileList.length > 0) {
                     return [2, fileList[0]];
                 }
-                console.log(PREDEBUG, 'fetching new wallet list for height ', height);
+                consoleDebug('fetching new wallet list for height ' + height);
                 return [4, axios_1.default.get(HOST_SERVER + '/block/height/' + heightString + '/wallet_list')];
             case 2:
                 response = (_a.sent());
@@ -225,7 +232,7 @@ exports.getTxDto = function (txid) { return __awaiter(void 0, void 0, void 0, fu
                 if (fileList.length > 0) {
                     return [2, fileList[0]];
                 }
-                console.log(PREDEBUG, 'fetching new txDto', txid);
+                consoleDebug('fetching new txDto' + txid);
                 return [4, axios_1.default.get(HOST_SERVER + "/tx/" + txid)];
             case 2:
                 txDto = (_a.sent()).data;
