@@ -134,8 +134,13 @@ export const getWalletList = async (height: number): Promise<WalletListDTO> => {
 	}
 
 	console.log(PREDEBUG, 'fetching new wallet list for height ', height)
-	//arweave.net keeps old lists
-	let walletList: WalletListDTO = (await axios.get( 'https://arweave.net' + '/block/height/' + heightString + '/wallet_list' )).data
+	//the nodes can clear old wallet lists to free up space, so this is not guaranteed to work
+	let response = (await axios.get( HOST_SERVER + '/block/height/' + heightString + '/wallet_list' ))
+	if(response.status !== 200){
+		throw new Error(`${PREDEBUG} ERROR ${response.status} cannot fetch wallet list for height=${height} from node=${HOST_SERVER}`)
+	}
+
+	let walletList: WalletListDTO = response.data
 	await fs.writeFile(`${path}${height}.wallets.json`, JSON.stringify(walletList))
 	return walletList
 }

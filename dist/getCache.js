@@ -186,7 +186,7 @@ exports.getBlockIndex = function (minimumHeight) { return __awaiter(void 0, void
     });
 }); };
 exports.getWalletList = function (height) { return __awaiter(void 0, void 0, void 0, function () {
-    var heightString, path, fileList, walletList;
+    var heightString, path, fileList, response, walletList;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -199,9 +199,13 @@ exports.getWalletList = function (height) { return __awaiter(void 0, void 0, voi
                     return [2, fileList[0]];
                 }
                 console.log(PREDEBUG, 'fetching new wallet list for height ', height);
-                return [4, axios_1.default.get('https://arweave.net' + '/block/height/' + heightString + '/wallet_list')];
+                return [4, axios_1.default.get(HOST_SERVER + '/block/height/' + heightString + '/wallet_list')];
             case 2:
-                walletList = (_a.sent()).data;
+                response = (_a.sent());
+                if (response.status !== 200) {
+                    throw new Error(PREDEBUG + " ERROR " + response.status + " cannot fetch wallet list for height=" + height + " from node=" + HOST_SERVER);
+                }
+                walletList = response.data;
                 return [4, promises_1.default.writeFile("" + path + height + ".wallets.json", JSON.stringify(walletList))];
             case 3:
                 _a.sent();
