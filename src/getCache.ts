@@ -2,8 +2,8 @@ import axios from 'axios'
 import fs from 'fs/promises'
 import isValid from 'is-valid-path'
 import { BlockDTO } from './types/dtos/Block.dto'
-import { BlockIndex } from './types/dtos/BlockIndex.dto'
-import { WalletList } from './types/dtos/WalletList.dto'
+import { BlockIndexDTO } from './types/dtos/BlockIndex.dto'
+import { WalletListDTO } from './types/dtos/WalletList.dto'
 import { TxDTO } from './types/dtos/Tx.dto'
 
 let HOST_SERVER = 'http://eu-west-1.arweave.net:1984' // default node
@@ -47,7 +47,7 @@ const getMatchingFiles = async <T>(partialName: string, path: string): Promise<T
 	}
 
 	if(fileList.length > 0){
-		console.debug(PREDEBUG, 'Returning cached file(s): ' + fileList.join(', ')) 
+		console.debug(PREDEBUG, 'returning cached file(s): ' + fileList.join(', ')) 
 
 		return Promise.all(
 			fileList.map(
@@ -61,23 +61,23 @@ const getMatchingFiles = async <T>(partialName: string, path: string): Promise<T
 	return []
 }
 
-export const getBlockDtosByHeight = async (height: number): Promise<BlockDTO[]> => {
+export const getBlockDtoByHeight = async (height: number): Promise<BlockDTO> => {
 	let heightString = height.toString()
 	let path = PATH_PREFIX + 'blocks/'
 	let cachedFiles = await getMatchingFiles<BlockDTO>(heightString, path)
 
 	// return cached if *they* are available
 	if(cachedFiles.length > 0){
-		return cachedFiles
+		return cachedFiles[0] //future feature, might be more than 1 block for this height
 	}
 
 	console.log(PREDEBUG, 'fetching new block by height ', heightString)
 	let blockDto: BlockDTO = (await axios.get( HOST_SERVER + '/block/height/' + heightString )).data
 	await fs.writeFile(`${path}${blockDto.height}.${blockDto.indep_hash}.json`, JSON.stringify(blockDto))
-	return [blockDto]
+	return blockDto
 }
 
-export const getBlockDtoId = async (blockId: string): Promise<BlockDTO> => {
+export const getBlockDtoById = async (blockId: string): Promise<BlockDTO> => {
 	let path = PATH_PREFIX + 'blocks/'
 	let cachedFiles = await getMatchingFiles<BlockDTO>(blockId, path)
 
@@ -96,20 +96,20 @@ export const getBlockDtoId = async (blockId: string): Promise<BlockDTO> => {
  * 
  * @param minimumHeight the minimum height of the block index list
  */
-export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndex> => {
+export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndexDTO> => {
 	if(HOST_SERVER === 'https://arweave.net'){
 		throw new Error("arweave.net does not serve /hash_list 3-tuples")
 	}
 
 	let path = PATH_PREFIX
-	let cachedFiles = await getMatchingFiles<BlockIndex>('block-index', path) //there's just 1 cache file
+	let cachedFiles = await getMatchingFiles<BlockIndexDTO>('block-index', path) //there's just 1 cache file
 
 	// return cached if it exists & meets the minuimum height
 	if(cachedFiles.length > 0 && cachedFiles[0].length > minimumHeight){
 		return cachedFiles[0]
 	}
 
-	let blockIndex: BlockIndex = (await axios.get( 
+	let blockIndex: BlockIndexDTO = (await axios.get( 
 		HOST_SERVER + '/hash_list',
 		{ headers: { "X-Block-Format": "3" } }
 	)).data
@@ -123,10 +123,10 @@ export const getBlockIndex = async (minimumHeight: number): Promise<BlockIndex> 
 	return blockIndex
 }
 
-export const getWalletList = async (height: number): Promise<WalletList> => {
+export const getWalletList = async (height: number): Promise<WalletListDTO> => {
 	let heightString = height.toString()
 	let path = PATH_PREFIX + 'wallet-lists/'
-	let fileList = await getMatchingFiles<WalletList>(heightString, path)
+	let fileList = await getMatchingFiles<WalletListDTO>(heightString, path)
 
 	// return cached if it's available
 	if(fileList.length > 0){
@@ -135,7 +135,7 @@ export const getWalletList = async (height: number): Promise<WalletList> => {
 
 	console.log(PREDEBUG, 'fetching new wallet list for height ', height)
 	//arweave.net keeps old lists
-	let walletList: WalletList = (await axios.get( 'https://arweave.net' + '/block/height/' + heightString + '/wallet_list' )).data
+	let walletList: WalletListDTO = (await axios.get( 'https://arweave.net' + '/block/height/' + heightString + '/wallet_list' )).data
 	await fs.writeFile(`${path}${height}.wallets.json`, JSON.stringify(walletList))
 	return walletList
 }

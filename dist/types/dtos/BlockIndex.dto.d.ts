@@ -3,5 +3,5 @@ interface BlockIndexTuple {
     "weave_size": string;
     "hash": string;
 }
-export declare type BlockIndex = BlockIndexTuple[];
+export declare type BlockIndexDTO = BlockIndexTuple[];
 export {};

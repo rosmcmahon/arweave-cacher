@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTxDto = exports.getWalletList = exports.getBlockIndex = exports.getBlockDtoId = exports.getBlockDtosByHeight = exports.getCurrentHeight = exports.setHostServer = exports.setPathPrefix = void 0;
+exports.getTxDto = exports.getWalletList = exports.getBlockIndex = exports.getBlockDtoById = exports.getBlockDtoByHeight = exports.getCurrentHeight = exports.setHostServer = exports.setPathPrefix = void 0;
 var axios_1 = __importDefault(require("axios"));
 var promises_1 = __importDefault(require("fs/promises"));
 var is_valid_path_1 = __importDefault(require("is-valid-path"));
@@ -92,7 +92,7 @@ var getMatchingFiles = function (partialName, path) { return __awaiter(void 0, v
                 return [3, 5];
             case 5:
                 if (fileList.length > 0) {
-                    console.debug(PREDEBUG, 'Returning cached file(s): ' + fileList.join(', '));
+                    console.debug(PREDEBUG, 'returning cached file(s): ' + fileList.join(', '));
                     return [2, Promise.all(fileList.map(function (filename) { return __awaiter(void 0, void 0, void 0, function () {
                             var _a, _b;
                             return __generator(this, function (_c) {
@@ -109,7 +109,7 @@ var getMatchingFiles = function (partialName, path) { return __awaiter(void 0, v
         }
     });
 }); };
-exports.getBlockDtosByHeight = function (height) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getBlockDtoByHeight = function (height) { return __awaiter(void 0, void 0, void 0, function () {
     var heightString, path, cachedFiles, blockDto;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -120,7 +120,7 @@ exports.getBlockDtosByHeight = function (height) { return __awaiter(void 0, void
             case 1:
                 cachedFiles = _a.sent();
                 if (cachedFiles.length > 0) {
-                    return [2, cachedFiles];
+                    return [2, cachedFiles[0]];
                 }
                 console.log(PREDEBUG, 'fetching new block by height ', heightString);
                 return [4, axios_1.default.get(HOST_SERVER + '/block/height/' + heightString)];
@@ -129,11 +129,11 @@ exports.getBlockDtosByHeight = function (height) { return __awaiter(void 0, void
                 return [4, promises_1.default.writeFile("" + path + blockDto.height + "." + blockDto.indep_hash + ".json", JSON.stringify(blockDto))];
             case 3:
                 _a.sent();
-                return [2, [blockDto]];
+                return [2, blockDto];
         }
     });
 }); };
-exports.getBlockDtoId = function (blockId) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getBlockDtoById = function (blockId) { return __awaiter(void 0, void 0, void 0, function () {
     var path, cachedFiles, blockDto;
     return __generator(this, function (_a) {
         switch (_a.label) {

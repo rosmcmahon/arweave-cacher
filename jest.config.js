@@ -1,7 +1,7 @@
 module.exports = {
   "roots": [
     "<rootDir>/src",
-    "<rootDir>/tests"
+    "<rootDir>/test"
   ],
   // "testRunner": "jest-circus/runner",
   preset: 'ts-jest',

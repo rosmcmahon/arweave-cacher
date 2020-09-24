@@ -3,10 +3,10 @@ import * as Cache from '../src/getCache'
 const main = async () => {
 	const current = await Cache.getCurrentHeight()
 
-	let bj1 = (await Cache.getBlockDtosByHeight(current))[0]
+	let bj1 = (await Cache.getBlockDtoByHeight(current))
 	console.log('getBlockDtosByHeight', bj1.height)
 
-	let bj2 = await Cache.getBlockDtoId(bj1.indep_hash)
+	let bj2 = await Cache.getBlockDtoById(bj1.indep_hash)
 	console.log('getBlockDtoId', bj2.height)
 
 	//only need 1 block index
@@ -22,7 +22,7 @@ const main = async () => {
 	// test a custom storage path
 	Cache.setPathPrefix('another-folder')
 
-	console.log('setPathPrefix', (await Cache.getBlockDtosByHeight(531000))[0].height )
+	console.log('setPathPrefix', (await Cache.getBlockDtoByHeight(531000)).height )
 
 }
 main();

@@ -3,5 +3,5 @@ interface WalletListEntry {
     balance: string;
     last_tx: string;
 }
-export declare type WalletList = WalletListEntry[];
+export declare type WalletListDTO = WalletListEntry[];
 export {};

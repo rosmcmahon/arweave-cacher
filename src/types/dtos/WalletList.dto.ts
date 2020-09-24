@@ -5,4 +5,4 @@ interface WalletListEntry {
 	last_tx: string
 }
 
-export type WalletList = WalletListEntry[]
+export type WalletListDTO = WalletListEntry[]

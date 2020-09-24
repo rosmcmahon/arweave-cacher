@@ -1,5 +1,3 @@
-import { type } from "os"
-
 /* An array of these defines the DTO for a `/hash_list` 3-tuple */
 interface BlockIndexTuple { 
 	"tx_root": string //b64url
@@ -7,4 +5,4 @@ interface BlockIndexTuple {
 	"hash": string //b64url
 }
 
-export type BlockIndex = BlockIndexTuple[]
+export type BlockIndexDTO = BlockIndexTuple[]
