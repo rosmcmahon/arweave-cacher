@@ -232,7 +232,7 @@ exports.getTxDto = function (txid) { return __awaiter(void 0, void 0, void 0, fu
                 if (fileList.length > 0) {
                     return [2, fileList[0]];
                 }
-                consoleDebug('fetching new txDto' + txid);
+                consoleDebug('fetching new txDto ' + txid);
                 return [4, axios_1.default.get(HOST_SERVER + "/tx/" + txid)];
             case 2:
                 txDto = (_a.sent()).data;

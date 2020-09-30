@@ -166,7 +166,7 @@ export const getTxDto = async (txid: string): Promise<TxDTO> => {
 		return fileList[0]
 	}
 
-	consoleDebug('fetching new txDto' + txid)
+	consoleDebug('fetching new txDto ' + txid)
 	let txDto: TxDTO = (await axios.get(`${HOST_SERVER}/tx/${txid}`)).data
 	await fs.writeFile(`${path}${txDto.id}.json`, JSON.stringify(txDto))
 	return txDto
