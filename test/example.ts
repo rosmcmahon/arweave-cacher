@@ -1,6 +1,10 @@
 import * as Cache from '../src/getCache'
 
 const main = async () => {
+	Cache.setDebugMessagesOn(true)
+	Cache.setHostServer('http://us.perma.online:1984')
+
+
 	const current = await Cache.getCurrentHeight()
 
 	let bj1 = (await Cache.getBlockDtoByHeight(current))

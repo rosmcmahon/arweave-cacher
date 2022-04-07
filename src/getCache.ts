@@ -1,12 +1,13 @@
 import axios from 'axios'
 import fs from 'fs/promises'
+import col from 'ansi-colors'
 import isValid from 'is-valid-path'
 import { BlockDTO } from './types/dtos/Block.dto'
 import { BlockIndexDTO } from './types/dtos/BlockIndex.dto'
 import { WalletListDTO } from './types/dtos/WalletList.dto'
 import { TxDTO } from './types/dtos/Tx.dto'
 
-const PREDEBUG = '\x1b[34m'+'arweave-cacher:'+'\x1b[0m'
+const PREDEBUG = col.blue('arweave-cacher:')
 
 /**
  * Configurabe parameters:
